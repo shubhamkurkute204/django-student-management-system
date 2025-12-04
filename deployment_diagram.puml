@@ -1,0 +1,44 @@
+@startuml
+!pragma layout smetana
+title Deployment Diagram - Django Student Management System
+
+actor "End User" as User
+package "Simple EC2 Deployment" #LightYellow {
+  node "Nginx (EC2)" as nginx
+  node "Django App (EC2)\nGunicorn" as app1
+  node "PostgreSQL (EC2)\npsql / data" as pg_ec2
+  node "node_exporter (installed on EC2)" as nodeexp
+  node "Prometheus (EC2)" as prometheus
+  node "Grafana (EC2)" as grafana
+  node "Alertmanager (EC2)" as alertmgr
+  node "Slack (Webhook)" as slack
+  node "S3 (backups)" as s3
+}
+
+' Connections (minimal)
+User --> nginx : "HTTP/HTTPS"
+nginx --> app1 : "proxy -> Gunicorn"
+app1 --> pg_ec2 : "psycopg2 / SQL"
+
+' Monitoring
+app1 --> prometheus : "/metrics"
+pg_ec2 --> prometheus : "postgres exporter"
+nodeexp ..> app1 : "installed"
+nodeexp ..> pg_ec2 : "installed"
+prometheus --> grafana : "metrics source"
+prometheus --> alertmgr : "alerts"
+alertmgr --> slack : "notify via webhook"
+
+' Backup
+pg_ec2 --> s3 : "cron script: pg_dump -> gzip -> aws s3 cp"
+
+note right of pg_ec2
+  Keep PostgreSQL on EC2 as requested.
+  Use `pg_dump` + compressed uploads to S3 for backups.
+end note
+
+note left of prometheus
+  Monitoring: Prometheus + Grafana + Alertmanager + node_exporter
+end note
+
+@enduml

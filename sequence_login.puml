@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Student Login
+actor Student
+participant "Browser / UI" as UI
+participant "Django View / Controller" as View
+participant "Auth System / DB" as Auth
+participant "Student Dashboard" as Dashboard
+
+Student -> UI: Enter credentials
+UI -> View: POST /login (credentials)
+View -> Auth: Verify credentials
+Auth --> View: Success / Failure
+alt success
+    View --> UI: Redirect (200)
+    UI -> Dashboard: Load dashboard
+else failure
+    View --> UI: Show error
+end
+@enduml

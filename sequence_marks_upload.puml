@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Staff uploads marks
+actor Staff
+participant "Browser / UI" as UI
+participant "Marks View" as View
+participant "Result Service" as ResultSvc
+database "Results DB" as DB
+
+Staff -> UI: Open Marks Module
+UI -> View: Select subject & class
+View --> UI: Show entry form
+Staff -> UI: Enter/Upload marks
+UI -> View: Submit marks
+View -> ResultSvc: Validate & calculate grade
+ResultSvc -> DB: Store marks
+DB --> ResultSvc: Confirm stored
+ResultSvc --> View: Return status
+View --> UI: Notify staff / students
+@enduml

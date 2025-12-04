@@ -1,0 +1,19 @@
+@startuml
+title Sequence: Staff marks attendance
+actor Staff
+participant "Browser / UI" as UI
+participant "Attendance View" as View
+participant "Subject Service" as SubjectSvc
+database "Attendance DB" as DB
+
+Staff -> UI: Open Attendance Module
+UI -> View: Request student list (subject, date)
+View -> SubjectSvc: Fetch subject & session
+SubjectSvc --> View: Student list
+View --> UI: Render list
+Staff -> UI: Mark present/absent
+UI -> View: Submit attendance
+View -> DB: Save attendance records
+DB --> View: Confirm saved
+View --> UI: Show confirmation
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+title Sequence: Leave request and approval
+actor Student
+participant "Browser / UI" as UI
+participant "Leave View" as LeaveView
+participant "HOD / Admin" as HOD
+database "Leave DB" as DB
+
+Student -> UI: Submit leave form
+UI -> LeaveView: POST leave request
+LeaveView -> DB: Save request
+DB --> LeaveView: Confirm saved
+LeaveView -> HOD: Notify for approval
+HOD --> LeaveView: Approve / Reject
+LeaveView -> DB: Update status
+DB --> LeaveView: Confirm update
+LeaveView -> UI: Notify student
+@enduml
